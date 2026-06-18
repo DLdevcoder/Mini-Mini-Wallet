@@ -1,10 +1,21 @@
 module.exports = {
   SUCCESS: 200,
-  INVALID_PARAMS: { code: 400, message: "Dữ liệu đầu vào không hợp lệ" },
+  INVALID_PARAMS: {
+    code: 400,
+    message: "Dữ liệu đầu vào bị thiếu hoặc không hợp lệ",
+  },
   SYSTEM_ERROR: { code: 500, message: "Lỗi hệ thống" },
   UNAUTHORIZED: {
     code: 401,
     message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
+  },
+  USER_NOT_FOUND: {
+    code: 402,
+    message: "Không tìm thấy người dùng",
+  },
+  MISS_BEARER: {
+    code: 403,
+    message: "Thiếu Bearer",
   },
   PHONE_EXISTED: { code: 101, message: "Số điện thoại đã được đăng ký" },
   USER_NOT_FOUND: { code: 102, message: "Không tìm thấy người dùng" },

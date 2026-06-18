@@ -5,7 +5,7 @@ module.exports = {
       if (!phone || !password) {
         return res.error(
           RespCode.INVALID_PARAMS.code,
-          "Thiếu số điện thoại hoặc mật khẩu",
+          RespCode.INVALID_PARAMS.message,
         );
       }
       const existingCustomer = await Customer.findOne({ phone });

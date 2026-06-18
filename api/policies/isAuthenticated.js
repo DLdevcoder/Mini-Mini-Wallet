@@ -2,10 +2,7 @@ module.exports = async function (req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.error(
-      RespCode.UNAUTHORIZED.code,
-      "Vui lòng cung cấp token định dạng Bearer",
-    );
+    return res.error(RespCode.MISS_BEARER.code, RespCode.MISS_BEARER.message);
   }
   const token = authHeader.split(" ")[1];
 
@@ -13,7 +10,10 @@ module.exports = async function (req, res, next) {
     const decoded = JwtService.verify(token);
     const customer = await Customer.findOne({ id: decoded.id });
     if (!customer) {
-      return res.error(RespCode.UNAUTHORIZED.code, "Người dùng không tồn tại");
+      return res.error(
+        RespCode.USER_NOT_FOUND.code,
+        RespCode.USER_NOT_FOUND.message,
+      );
     }
     req.customerId = customer.id;
     return next();
