@@ -3,4 +3,5 @@ module.exports.routes = {
   "POST /api/login": "CustomerController.login",
   "POST /api/pocket/balance": "PocketController.getBalance",
   "POST /api/transaction/transfer": "TransactionController.transfer",
+  "POST /api/transaction/history": "TransactionController.history",
 };

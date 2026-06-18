@@ -1,22 +1,22 @@
-module = {
+module.exports = {
   transfer: async function (req, res) {
     try {
       const { receiverPhone, amount } = req.body;
-      const senderId = req.session.customerId;
+      const senderId = req.customerId;
       if (!receiverPhone || !amount) {
         return res.error(RespCode.MISS_INFO.code, RespCode.MISS_INFO.message);
       }
       const receiver = await Customer.findOne({ phone: receiverPhone });
       if (!receiver) {
         return res.error(
-          RespCode.RECEIVER_NOT_FOUND.code,
-          RespCode.RECEIVER_NOT_FOUND.message
+          RespCode.USER_NOT_FOUND.code,
+          RespCode.USER_NOT_FOUND.message,
         );
       }
       if (receiver.id === senderId) {
         return res.error(
-          RespCode.INVALID_RECEIVER.code,
-          RespCode.INVALID_RECEIVER.message
+          RespCode.TRANSFER_SELF.code,
+          RespCode.TRANSFER_SELF.message,
         );
       }
       const senderPocket = await Pocket.findOne({ owner: senderId });
@@ -24,21 +24,21 @@ module = {
       if (!senderPocket || !receiverPocket) {
         return res.error(
           RespCode.POCKET_NOT_FOUND.code,
-          RespCode.POCKET_NOT_FOUND.message
+          RespCode.POCKET_NOT_FOUND.message,
         );
       }
       if (senderPocket.balance < amount) {
         return res.error(
           RespCode.INSUFFICIENT_BALANCE.code,
-          RespCode.INSUFFICIENT_BALANCE.message
+          RespCode.INSUFFICIENT_BALANCE.message,
         );
       }
 
-      const newTransaction = senderPocket.balance - amount;
+      const newSenderBalance = senderPocket.balance - amount;
       const newReceiverBalance = receiverPocket.balance + amount;
 
       await Pocket.updateOne({ id: senderPocket.id }).set({
-        balance: newTransaction,
+        balance: newSenderBalance,
       });
       await Pocket.updateOne({ id: receiverPocket.id }).set({
         balance: newReceiverBalance,
@@ -48,13 +48,43 @@ module = {
         fromPocket: senderPocket.id,
         toPocket: receiverPocket.id,
         amount,
+        status: "SUCCESS",
       }).fetch();
-      return res.ok({ transaction });
+      return res.ok({
+        transactionId: transaction.id,
+        currentBalance: newSenderBalance,
+      });
     } catch (error) {
       console.error(error);
       return res.error(
         RespCode.SYSTEM_ERROR.code,
-        RespCode.SYSTEM_ERROR.message
+        RespCode.SYSTEM_ERROR.message,
+      );
+    }
+  },
+
+  history: async function (req, res) {
+    try {
+      const customerId = req.customerId;
+      const pocket = await Pocket.findOne({ owner: customerId });
+      if (!pocket) {
+        return res.error(
+          RespCode.POCKET_NOT_FOUND.code,
+          RespCode.POCKET_NOT_FOUND.message,
+        );
+      }
+      const transactions = await Transaction.find({
+        or: [{ fromPocket: pocket.id }, { toPocket: pocket.id }],
+      })
+        .populate("fromPocket")
+        .populate("toPocket")
+        .sort("createdAt DESC");
+      return res.ok({ transactions });
+    } catch (error) {
+      console.error(error);
+      return res.error(
+        RespCode.SYSTEM_ERROR.code,
+        RespCode.SYSTEM_ERROR.message,
       );
     }
   },

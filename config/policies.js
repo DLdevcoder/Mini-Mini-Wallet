@@ -9,5 +9,6 @@ module.exports.policies = {
   },
   TransactionController: {
     transfer: "isAuthenticated",
+    history: "isAuthenticated",
   },
 };

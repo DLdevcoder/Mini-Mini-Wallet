@@ -4,7 +4,7 @@ module.exports = async function (req, res, next) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.error(
       RespCode.UNAUTHORIZED.code,
-      "Vui lòng cung cấp token định dạng Bearer"
+      "Vui lòng cung cấp token định dạng Bearer",
     );
   }
   const token = authHeader.split(" ")[1];

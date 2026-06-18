@@ -5,14 +5,14 @@ module.exports = {
       if (!phone || !password) {
         return res.error(
           RespCode.INVALID_PARAMS.code,
-          "Thiếu số điện thoại hoặc mật khẩu"
+          "Thiếu số điện thoại hoặc mật khẩu",
         );
       }
       const existingCustomer = await Customer.findOne({ phone });
       if (existingCustomer) {
         return res.error(
           RespCode.PHONE_EXISTED.code,
-          RespCode.PHONE_EXISTED.message
+          RespCode.PHONE_EXISTED.message,
         );
       }
       const newCustomer = await Customer.create({ phone, password }).fetch();
@@ -27,7 +27,7 @@ module.exports = {
       console.error(error);
       return res.error(
         RespCode.SYSTEM_ERROR.code,
-        RespCode.SYSTEM_ERROR.message
+        RespCode.SYSTEM_ERROR.message,
       );
     }
   },
@@ -38,20 +38,20 @@ module.exports = {
       if (!phone || !password) {
         return res.error(
           RespCode.INVALID_PARAMS.code,
-          RespCode.INVALID_PARAMS.message
+          RespCode.INVALID_PARAMS.message,
         );
       }
       const customer = await Customer.findOne({ phone });
       if (!customer) {
         return res.error(
-          RespCode.PHONE_NOT_FOUND.code,
-          RespCode.PHONE_NOT_FOUND.message
+          RespCode.USER_NOT_FOUND.code,
+          RespCode.USER_NOT_FOUND.message,
         );
       }
       if (customer.password !== password) {
         return res.error(
-          RespCode.INVALID_PASSWORD.code,
-          RespCode.INVALID_PASSWORD.message
+          RespCode.WRONG_PASSWORD.code,
+          RespCode.WRONG_PASSWORD.message,
         );
       }
       const token = JwtService.issue({
@@ -63,7 +63,7 @@ module.exports = {
       console.error(error);
       return res.error(
         RespCode.SYSTEM_ERROR.code,
-        RespCode.SYSTEM_ERROR.message
+        RespCode.SYSTEM_ERROR.message,
       );
     }
   },
