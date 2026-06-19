@@ -20,6 +20,13 @@ module.exports = {
           RespCode.TRANSFER_SELF.message,
         );
       }
+      const receiverPocket = await Pocket.findOne({ owner: receiver.id });
+      if (!receiverPocket) {
+        return res.error(
+          RespCode.POCKET_NOT_FOUND.code,
+          RespCode.POCKET_NOT_FOUND.message,
+        );
+      }
       const db = Pocket.getDatastore().manager;
       const pocketCollection = db.collection(Pocket.tableName);
       const transactionCollection = db.collection(Transaction.tableName);
@@ -49,7 +56,7 @@ module.exports = {
           const newTx = await transactionCollection.insertOne(
             {
               fromPocket: updatedDoc._id,
-              toPocket: new ObjectId(receiver.pocket),
+              toPocket: new ObjectId(receiverPocket.id),
               amount: amount,
               status: "SUCCESS",
               createdAt: Date.now(),

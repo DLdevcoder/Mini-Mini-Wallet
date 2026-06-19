@@ -9,10 +9,6 @@ module.exports = {
     code: 401,
     message: "Phiên đăng nhập không hợp lệ hoặc đã hết hạn",
   },
-  USER_NOT_FOUND: {
-    code: 402,
-    message: "Không tìm thấy người dùng",
-  },
   MISS_BEARER: {
     code: 403,
     message: "Thiếu Bearer",
